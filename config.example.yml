@@ -1,0 +1,5 @@
+signal_service: "http://localhost:8080"
+phone_number: "+1234567890"
+storage:
+    type: "sqlite"
+    sqlite_db: "/Data"

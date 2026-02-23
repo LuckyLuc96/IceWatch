@@ -1,8 +1,7 @@
 import asyncio
-from keys import ACCOUNT_UUID
+from keys import PHONE_NUMBER, SIGNAL_SERVICE
 from signalbot import Command, Config, Context, SignalBot, enable_console_logging, triggered
-import logging
-import os
+import sqlite3
 
 async def csv_function():
     pass
@@ -10,7 +9,7 @@ async def csv_function():
 async def reply():
     try:
         csv_function()
-    else:
+    except:
         pass
 
     await signal.send_reaction(message, "🦀")
@@ -25,11 +24,6 @@ async def test_command():
 async def main():
     enable_console_logging(logging.INFO)
 
-    bot = SignalBot(
-        Config(
-            signal_service=os.environ["SIGNAL_SERVICE"],
-            phone_number=os.environ["PHONE_NUMBER"],
-        )
-    )
+    bot = SignalBot("config.json")
     bot.register(test_command())  # Run the command for all contacts and groups
     bot.start()

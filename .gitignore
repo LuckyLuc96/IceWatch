@@ -1,3 +1,4 @@
-keys.py
+config.yml
 /__pycache__
 signal-cli
+sqlite3
