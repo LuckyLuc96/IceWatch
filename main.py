@@ -1,7 +1,9 @@
 import asyncio
-from keys import PHONE_NUMBER, SIGNAL_SERVICE
 from signalbot import Command, Config, Context, SignalBot, enable_console_logging, triggered
 import sqlite3
+import yaml
+import logging
+import os
 
 async def csv_function():
     pass
@@ -21,9 +23,22 @@ async def test_command():
     async def handle(self, c: Context) -> None:
         await c.send("Test Message")
 
-async def main():
+def main():
+
+    with open('config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+    print(file)
+
     enable_console_logging(logging.INFO)
 
-    bot = SignalBot("config.json")
+    bot = SignalBot(
+        Config(
+            signal_service=os.environ["SIGNAL_SERVICE"],
+                        phone_number=os.environ["PHONE_NUMBER"],
+        )
+    )
     bot.register(test_command())  # Run the command for all contacts and groups
     bot.start()
+
+if __name__ == "__main__":
+    main()
