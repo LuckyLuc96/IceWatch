@@ -1,44 +1,54 @@
 import asyncio
-from signalbot import Command, Config, Context, SignalBot, enable_console_logging, triggered
 import sqlite3
 import yaml
 import logging
-import os
+import dbus
+from signalbot import (
+     Command,
+     Config,
+     Context,
+     SignalBot,
+     enable_console_logging,
+     triggered
+)
+import nest_asyncio
+nest_asyncio.apply()
 
-async def csv_function():
-    pass
+Class Functions():
+    def csv_function():
+        pass
 
-async def reply():
+class TestCommand():
     try:
-        csv_function()
+        Functions.csv_function()
     except:
         pass
 
-    await signal.send_reaction(message, "🦀")
-    await signal.send_message(context[1],"Sorry, just feeling a little crabby.")
-    return True
-
-async def test_command():
-    @triggered("?LP")
+class PingCommand(Command):
+    @triggered("Ping")
     async def handle(self, c: Context) -> None:
-        await c.send("Test Message")
+        await c.send("Pong")
 
-def main():
-
+async def main():
+    enable_console_logging(logging.INFO)
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-    print(file)
-
-    enable_console_logging(logging.INFO)
 
     bot = SignalBot(
         Config(
-            signal_service=os.environ["SIGNAL_SERVICE"],
-                        phone_number=os.environ["PHONE_NUMBER"],
+            signal_service=config["signal_service"],
+            phone_number=config["phone_number"],
         )
     )
-    bot.register(test_command())  # Run the command for all contacts and groups
+
+    bot.register(PingCommand(), contacts=False, groups=True)
     bot.start()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
+    #try:
+    #    asyncio.run(main())
+    #except Exception as e:
+    #    print(f"An error occured. See: \n", e)
+    #finally:
+    #    exit()
