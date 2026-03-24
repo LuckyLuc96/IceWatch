@@ -1,9 +1,11 @@
 #!/usr/bin/bash
-currentDir=$PWD
-dir=$HOME/.local/share/signal-cli
-mkdir -p $dir
-cd $dir
-sudo docker run -p 8080:8080 \
-    -v $(pwd)/signal-cli-config:$dir \
-    -e 'MODE=normal' bbernhard/signal-cli-rest-api:latest
-cd $currentDir
+export SIGNAL_SERVICE=(yq '.signal_service' config.yaml)
+export PHONE_NUMBER=(yq '.phone_number' config.yaml)
+DIR=$HOME/.local/share/signal-cli
+CONFIG_DIR=$HOME/.local/share/signal-cli/signal-cli-config
+sudo mkdir -p $DIR
+cd $DIR
+sudo mkdir -p $CONFIG_DIR
+docker run -p 8080:8080 \
+    -v $CONFIG_DIR \
+    -e 'MODE=json-rpc' bbernhard/signal-cli-rest-api:latest
