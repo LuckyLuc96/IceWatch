@@ -2,7 +2,6 @@ import asyncio
 import sqlite3
 import yaml
 import logging
-import dbus
 from signalbot import (
      Command,
      Config,
@@ -14,7 +13,7 @@ from signalbot import (
 import nest_asyncio
 nest_asyncio.apply()
 
-Class Functions():
+class Functions():
     def csv_function():
         pass
 

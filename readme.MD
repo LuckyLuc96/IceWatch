@@ -9,23 +9,21 @@ I will include a shellscript for an installation using signal-api to mimick the 
 ### To install the chat bot:
 
 Please have Python3 installed correctly.
-Install the libraries this script. You can do so with:
-> pip install asyncio, signalbot, logging
+Install the libraries this script uses. You can do so with:
+> pip install asyncio, signalbot, logging, yaml, nest_asyncio
 
-Create a text file named keys.py
-Add these lines in that file as follows:
-> SIGNAL_SERVICE = 123456789
+Rename or copy the file named config.example.yaml to be config.yaml and set the values inside to your values. Please note the area code is required for the phone number.
+> signal_service: "http://localhost:8080"
 
-> PHONE_NUMBER = 123456789
+> PHONE_NUMBER = +19100000000
 
-You will need to install and use a signal api. We will use [signal-cli](https://github.com/AsamK/signal-cli)
-
-[Quickstart guide for signal-api](https://github.com/AsamK/signal-cli/wiki/Quickstart)
+You will need to install and use a the signal-cli, which can be downloaded [here](https://github.com/AsamK/signal-cli/releases/latest).
+You will need the signal-cli-rest-api as well, but the download and installation is handled by dockerInit.sh
 
 ### To setup the chat bot:
-Firstly, you'll want to connect the host device to your bot's account, or create a new account. Either way, you'll need a real phone number to maintain the account. I use singal-cli for this. Please see the guide which is linked above.
+Firstly, you'll want to connect the host device to your bot's account, or create a new account. Either way, you'll need a real phone number to maintain the account. I use singal-cli for this. Please see the [Quickstart guide for signal-api](https://github.com/AsamK/signal-cli/wiki/Quickstart).
 
-I ended up linking my primary account to the new bot account. My android phone is my primary device, so linking this required taking the text link given by the signal-cli and putting it through a QR code generator tool so you can scan it on your phone. Do not do this on an online site - I recommend [this](https://github.com/x-hw/amazing-qr) tool for the job.
+I ended up linking my primary account to the new bot account. My android phone is my primary device, so linking this required taking the text link given by the signal-cli and putting it through a QR code generator tool so you can scan it on your phone. Do not do this on an online site - I recommend the [amazing-qr](https://github.com/x-hw/amazing-qr) tool for the job.
 
 My steps to do this:
 
@@ -41,9 +39,10 @@ You must not close the active process in terminal number 1 until the device is l
 The quotations are necessary since the link is quite large.
 
 ## Starting the chat bot, after setup
+First first time set up, please run dockerInit.sh by typing in the terminal, on the correct directory, "bash dockerInit.sh"
 
+First usage after setup, you'll need to run all 3: signal-cli, signal-cli-rest-api docker image, and this program's main.py
+For now this requires 3 terminal windows. I will be working on shortening that.
 
-## Notes
-I am learning how to do this as I make this document and will update it as I understand it better. It seems that signal doesn't have bot specific accounts so we must use a user account that is linked to a real phone number. For testing purposes I will be using my own cell phone. This means my personal account will be the bot's account, I recommend getting a cheap dedicated cell phone for this or some form of paid VOIP that the host machine can access. The bot won't need the phone while running, but the account's creation will need the phone.
-It comes from a github repo called signal-cli, found here: https://github.com/AsamK/signal-cli
-
+## Notes 24 March 2026
+As of this commit, I have all 3 programs "running" but my python program is still saying signal-cli-rest-api is not yet showing to it. I will need to investigate my installation of the docker image and see what I'll need to modify from here. This program is still not ready, nor does it do anything yet.
