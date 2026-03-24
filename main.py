@@ -28,7 +28,7 @@ class PingCommand(Command):
     async def handle(self, c: Context) -> None:
         await c.send("Pong")
 
-async def main():
+def main():
     enable_console_logging(logging.INFO)
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
@@ -44,10 +44,9 @@ async def main():
     bot.start()
 
 if __name__ == "__main__":
-    asyncio.run(main())
-    #try:
-    #    asyncio.run(main())
-    #except Exception as e:
-    #    print(f"An error occured. See: \n", e)
-    #finally:
-    #    exit()
+    try:
+        main()
+    except Exception as e:
+        print(f"An error occured. See: \n", e)
+    finally:
+        exit()

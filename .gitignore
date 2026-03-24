@@ -1,4 +1,5 @@
 /__pycache__
+/signal-cli-config
 signal-cli
 sqlite3
 config.yaml
