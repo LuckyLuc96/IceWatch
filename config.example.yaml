@@ -1,5 +1,5 @@
-signal_service: "http://localhost:8080"
-phone_number: "+1234567890"
-storage:
-    type: "sqlite"
-    path: "/Data"
+SIGNAL_SERVICE: "http://localhost:8080"
+PHONE_NUMBER: "+1234567890"
+STORAGE:
+    TYPE: "sqlite"
+    STORE_PATH: "/Data"

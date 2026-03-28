@@ -3,12 +3,12 @@ import sqlite3
 import yaml
 import logging
 from signalbot import (
-     Command,
-     Config,
-     Context,
-     SignalBot,
-     enable_console_logging,
-     triggered
+    Command,
+    Config,
+    Context,
+    SignalBot,
+    enable_console_logging,
+    triggered
 )
 import nest_asyncio
 nest_asyncio.apply()
@@ -35,8 +35,9 @@ def main():
 
     bot = SignalBot(
         Config(
-            signal_service=config["signal_service"],
-            phone_number=config["phone_number"],
+            signal_service=config["SIGNAL_SERVICE"],
+            phone_number=config["PHONE_NUMBER"],
+            storage=config["STORAGE"]
         )
     )
 
@@ -44,6 +45,7 @@ def main():
     bot.start()
 
 if __name__ == "__main__":
+    #main()
     try:
         main()
     except Exception as e:
