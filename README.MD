@@ -12,9 +12,7 @@ To read the variables in config.yaml, we will use a tool called yq. Install it w
 
 > sudo dnf install yq
 
-or
-
-> sudo apt install yq
+replace dnf with whatever software manager you use.
 
 Please have Python3 installed correctly.
 Install the libraries this script uses. You can do so with:
@@ -29,9 +27,11 @@ You will need to install and use a the signal-cli, which can be downloaded [here
 You will need the signal-cli-rest-api as well, but the download and installation is handled by dockerInit.sh
 
 ### To setup the chat bot:
-Firstly, you'll want to connect the host device to your bot's account, or create a new account. Either way, you'll need a real phone number to maintain the account. I use singal-cli for this. Please see the [Quickstart guide for signal-api](https://github.com/AsamK/signal-cli/wiki/Quickstart).
+After running dockerInit.sh, run dockerRun.sh and go to [this URL](http://127.0.0.1:8080/v1/qrcodelink?device_name=local) and connect your host device to your signal account.
 
-I ended up linking my primary account to the new bot account. My android phone is my primary device, so linking this required taking the QR code link given by the signal-cli-rest-api website, which is (while the docker image is running) http://localhost:8080/v1/qrcodelink?device_name=signal-api and scanning it with Signal's mobile app. Look in Settings > Linked devices. To do this, you'll need to set up the docker image, which can be done using my dockerInit.sh script and then running the new docker image with dockerRun.sh
+I ended up linking my primary account to the new bot account. Look in Settings > Linked devices.
+
+After the device is connected, restart the docker image by ending the process (control and C) and rerunning it.
 
 For usage after account is linked up, you'll need to run both programs: the docker image (with dockerRun.sh), and this program's "main.py"
 You'll need two terminal and run one command in each:
