@@ -2,6 +2,7 @@ import asyncio
 import sqlite3
 import yaml
 import logging
+import os
 from signalbot import (
     Command,
     Config,
@@ -16,6 +17,15 @@ nest_asyncio.apply()
 class Functions():
     def csv_function():
         pass
+    def database_store():
+        pass
+    def database_retrieve():
+        pass
+    def get_img_datetimes():
+        dir = r"signal-cli-config/attachments"
+        for file in os.scandir(dir):
+            time = os.path.getctime(file)
+            print(file, time)
 
 class TestCommand():
     try:
@@ -23,13 +33,19 @@ class TestCommand():
     except:
         pass
 
-class PingCommand(Command):
-    @triggered("Ping")
+class LicensePlateCommand(Command):
+    @triggered("!LP" or "!lp" or "!Lp")
     async def handle(self, c: Context) -> None:
-        await c.send("Pong")
+        await c.send(str(c.message))
+
+class HelpCommand(Command):
+    @triggered("!Help" or "!HELP" or "!help")
+    async def handle(self, c: Context) -> None:
+        await c.send("The existing commands can be called with !Help or !LP (short for License Plate")
+        await c.send("The Help Command shows this message. The LP command is being built to do various commands based on existing data or newly imported images/data. More to come.")
 
 def main():
-    enable_console_logging(logging.INFO)
+    enable_console_logging(logging.DEBUG)
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
@@ -41,7 +57,9 @@ def main():
         )
     )
 
-    bot.register(PingCommand(), contacts=False, groups=True)
+    bot.register(LicensePlateCommand(), contacts=False, groups=True)
+    bot.register(HelpCommand(), contacts=False, groups=True)
+    #bot.register(TestCommand(), contacts=True, groups=True)
     bot.start()
 
 if __name__ == "__main__":
