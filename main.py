@@ -9,14 +9,15 @@ from signalbot import (
     Context,
     SignalBot,
     enable_console_logging,
-    triggered
+    triggered,
+    regex_triggered
 )
 import nest_asyncio
 nest_asyncio.apply()
 
 class Functions():
-    def csv_function():
-        pass
+    def database_check(LP):
+        print(f"Test function call user data in: {LP}.")
     def database_store():
         pass
     def database_retrieve():
@@ -34,7 +35,13 @@ class TestCommand():
         pass
 
 class LicensePlateCommand(Command):
-    @triggered("!LP" or "!lp" or "!Lp")
+    @regex_triggered("!LP")
+    async def handle(self, c: Context) -> None:
+        data = str(c.message)
+        Functions.database_check(data)
+
+class EchoCommand(Command):
+    @regex_triggered("!echo")
     async def handle(self, c: Context) -> None:
         await c.send(str(c.message))
 
@@ -56,8 +63,8 @@ def main():
             storage=config["STORAGE"]
         )
     )
-
     bot.register(LicensePlateCommand(), contacts=False, groups=True)
+    bot.register(EchoCommand(), contacts=False, groups=True)
     bot.register(HelpCommand(), contacts=False, groups=True)
     #bot.register(TestCommand(), contacts=True, groups=True)
     bot.start()
