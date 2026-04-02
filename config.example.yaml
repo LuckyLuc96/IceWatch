@@ -2,4 +2,4 @@ SIGNAL_SERVICE: "http://localhost:8080"
 PHONE_NUMBER: "+1234567890"
 STORAGE:
     TYPE: "sqlite"
-    STORE_PATH: "/Data"
+    STORE_PATH: "Data.db"
