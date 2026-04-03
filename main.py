@@ -43,7 +43,7 @@ class Functions():
     def database_retrieve(data):
         Functions.database_init() #Makes sure DB/Table exists.
         try:
-            Functions.cursor.execute("SELECT * FROM IceWatch WHERE ?", (data,))
+            Functions.cursor.execute("SELECT * FROM IceWatch WHERE LP=?", (data,))
             selection = Functions.cursor.fetchall()
             newList = []
             for tup in selection:
@@ -109,7 +109,7 @@ class LicensePlateCommand(Command):
                 await c.send(f"License Plate number '{data[0]}' has sucessfully been recorded going '{data[1]}' at {time}")
             if success == False:
                 await c.send(f"An error occured with the bot. Please contact the operator. The license plate {data[0]} has not been recorded at this time.")
-                logging.error(f"An error occured with the recording of '{data[0]}' by user [placeholder]. The input collected was:\{data}")
+                logging.error(f"An error occured with the recording of '{data[0]}' by user [placeholder]. The input collected was:\n{data}")
 
 class EchoCommand(Command):
     @regex_triggered("!echo")
