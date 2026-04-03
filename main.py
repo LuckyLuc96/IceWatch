@@ -43,18 +43,23 @@ class Functions():
     def database_retrieve(data):
         Functions.database_init() #Makes sure DB/Table exists.
         try:
-            Functions.cursor.execute("SELECT * FROM IceWatch WHERE ?", (data[0],))
+            Functions.cursor.execute("SELECT * FROM IceWatch WHERE ?", (data,))
             selection = Functions.cursor.fetchall()
-            if selection is not None:
-                return True, selection[-1]
-            if selection is None:
-                selection = "" #For logging
+            newList = []
+            for tup in selection:
+                newList.append(tup)
+            if newList:
+                logging.debug(f"'newSelection[-1]' is {newList[-1]}")
+                return True, newList[-1]
+            else:
+                selection = ""
                 return False, selection
         except Exception as e:
             logging.error(f"Exception has occured, see\n{e}")
-            return False
+            selection = ""
+            return False, selection
         finally:
-            logging.debug(f"database_retrieve has finished\nArray 'data' is: {data}\nselection is {selection}")
+            logging.debug(f"database_retrieve has finished")
 
     def database_store(data, time):
         try:
@@ -79,9 +84,7 @@ class LicensePlateCommand(Command):
     async def handle(self, c: Context) -> None:
         place = "" #placeholder for now
         data = str(c.message).replace("!LP", '').strip()
-        print("data1", data)
         data = data.split(', ', 1)
-        print("data2", data)
         time = datetime.datetime.now()
         time = time.strftime('%H:%M on %d/%m/%Y')
         chars = 0
@@ -92,19 +95,21 @@ class LicensePlateCommand(Command):
             await c.send("Please check the license plate entered for correctness.")
             return
         if len(data) == 1: #Query command
+            data = str(data[0])
             exists, selection = Functions.database_retrieve(data)
             if exists == True:
                 logging.debug(f"exists = {exists} and selection = {selection}")
-                await c.send(f"License Plate number: '{data[0]}' has last been recorded at {selection[2]} and with the heading: '{selection[1]}'. If you would like to update the location, please run the command again, but this time add the new location/heading. The time will record automatically.")
+                await c.send(f"LP: '{data}' last reported: {selection[2]}, with the heading: '{selection[1]}'.")
             if exists == False:
                 logging.debug(f"exists = {exists} and selection = {selection}")
-                await c.send(f"License Plate number: '{data[0]}' has not been recorded before. Please repeat the command and include a current location and heading. The time will automatically be recorded when you send the message.")
+                await c.send(f"LP '{data}' has not been recorded before. Please repeat the command and include a current location and heading. The time will automatically be recorded when you send the message. Example: '!LP PH1000, On market street and 13th street going north'")
         if len(data) == 2: #Update/Input command
             success = Functions.database_store(data, time)
             if success == True:
-                await c.send(f"License Plate number {data[0]} has sucessfully been recorded!")
+                await c.send(f"License Plate number '{data[0]}' has sucessfully been recorded going '{data[1]}' at {time}")
             if success == False:
-                await c.send(f"An error occured recording License Plate: '{data[0]}'. Please contact the operator.")
+                await c.send(f"An error occured with the bot. Please contact the operator. The license plate {data[0]} has not been recorded at this time.")
+                logging.error(f"An error occured with the recording of '{data[0]}' by user [placeholder]. The input collected was:\{data}")
 
 class EchoCommand(Command):
     @regex_triggered("!echo")
