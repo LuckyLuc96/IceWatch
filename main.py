@@ -9,19 +9,24 @@ from signalbot import (
     Config,
     Context,
     SignalBot,
-    enable_console_logging,
     triggered,
     regex_triggered
 )
 import nest_asyncio
 nest_asyncio.apply()
 
-class Functions():
-    with open('config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-        file.close()
+with open('config.yaml', 'r') as file:
+    CONFIG = yaml.safe_load(file)
+    file.close()
 
-    dir = config["STORE_PATH"]
+loggingLevel = CONFIG["LOGGING_LEVEL"] #Change in config.yaml options: DEBUG, INFO, ERROR, CRITICAL from most to least verbose/detailed
+logging.basicConfig(
+    level=str(f"{loggingLevel}"),
+    format='%(asctime)s - %(levelname)s - %(message)s',
+)
+
+class Functions():
+    dir = CONFIG["STORE_PATH"]
 
     connection = sqlite3.connect(dir)
     cursor = connection.cursor()
@@ -29,7 +34,6 @@ class Functions():
     def database_init():
         table = Functions.cursor.execute(f"SELECT * FROM IceWatch;")
         tables = Functions.cursor.fetchall()
-        print(table, tables)
         if tables is not None:
             return True
         else:
@@ -38,15 +42,20 @@ class Functions():
 
     def database_retrieve(LP):
         Functions.database_init() #Makes sure DB/Table exists.
+        time = ""
+        place = ""
         try:
-            Functions.cursor.execute("SELECT * FROM IceWatch WHERE LP = ?", (LP,))
+            Functions.cursor.execute("SELECT * FROM IceWatch WHERE LP = ?", (LP[0],))
             selection = Functions.cursor.fetchall()
-            return True, selection
+            if selection is not None:
+                return True
+            else:
+                return False
         except Exception as e:
-            print(f"Exception has occured, see\n{e}")
-            return False, None
+            logging.error(f"Exception has occured, see\n{e}")
+            return False
         finally:
-            print(f"DEBUG: database_retrieve has finished\nLP is {LP},\nLP[0] is {LP[0]}")
+            logging.debug(f"database_retrieve has finished\nArray 'LP' is: {LP}\nVariables 'time', 'place' is: {time}, {place}\n'selection' is {selection}")
 
     def database_store():
         pass
@@ -61,15 +70,14 @@ class LicensePlateCommand(Command):
     table = bool
     @regex_triggered("!LP")
     async def handle(self, c: Context) -> None:
+        place = "" #placeholder for now
         data = str(c.message).replace("!LP", '').strip()
         data = data.split(', ', 1)
         time = datetime.datetime.now()
         time = time.strftime('%d/%m/%Y %H:%M')
-        print(f"Post time.append{data}")
         if len(data) == 1:
-            print(data)
-            exists, result = Functions.database_retrieve(data)
-            print(exists, result)
+            exists = Functions.database_retrieve(data)
+            logging.debug(f"exists, time, place is: {exists}, {time}, {place}")
             if exists == True:
                 await c.send(f"{data[0]} is has previously been recorded at {time} and {place}. If you would like to update the location, please run the command again, but this time add the new location/heading. The time will record automatically.")
             if exists == False:
@@ -87,15 +95,10 @@ class HelpCommand(Command):
         await c.send("The Help Command shows this message. The LP command is being built to do various commands based on existing data or newly imported images/data. More to come.")
 
 def main():
-    enable_console_logging(logging.DEBUG)
-    with open('config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-        file.close()
-
     bot = SignalBot(
         Config(
-            signal_service=config["SIGNAL_SERVICE"],
-            phone_number=config["PHONE_NUMBER"]
+            signal_service=CONFIG["SIGNAL_SERVICE"],
+            phone_number=CONFIG["PHONE_NUMBER"]
         )
     )
     bot.register(LicensePlateCommand(), contacts=False, groups=True)
@@ -108,11 +111,9 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"An error occured. See: \n", e)
+        logging.error(f"An error occured. See: \n{e}")
     finally:
-        #Close SQLite DB and .yaml files
+        #Close SQLite DB, if not already done
         if Functions.connection:
             Functions.cursor.close()
-        if Functions.file:
-            Functions.file.close()
         exit()
