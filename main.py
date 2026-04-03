@@ -40,31 +40,38 @@ class Functions():
             Functions.cursor.execute("CREATE TABLE IceWatch LP, Heading, TimeReported")
             return True
 
-    def database_retrieve(LP):
+    def database_retrieve(data):
         Functions.database_init() #Makes sure DB/Table exists.
-        time = ""
-        place = ""
         try:
-            Functions.cursor.execute("SELECT * FROM IceWatch WHERE LP = ?", (LP[0],))
+            Functions.cursor.execute("SELECT * FROM IceWatch WHERE ?", (data[0],))
             selection = Functions.cursor.fetchall()
             if selection is not None:
-                return True
-            else:
-                return False
+                return True, selection[-1]
+            if selection is None:
+                selection = "" #For logging
+                return False, selection
         except Exception as e:
             logging.error(f"Exception has occured, see\n{e}")
             return False
         finally:
-            logging.debug(f"database_retrieve has finished\nArray 'LP' is: {LP}\nVariables 'time', 'place' is: {time}, {place}\n'selection' is {selection}")
+            logging.debug(f"database_retrieve has finished\nArray 'data' is: {data}\nselection is {selection}")
 
-    def database_store():
-        pass
+    def database_store(data, time):
+        try:
+            Functions.cursor.execute(f"INSERT INTO IceWatch VALUES (?, ?, ?);", (data[0], data[1], time))
+            Functions.connection.commit()
+            return True
+        except Exception as e:
+            logging.critical(f"Something has gone very wrong here. See: {e}")
+            return False
+        return False
 
     def get_img_datetimes():
         dir = r"signal-cli-config/attachments"
         for file in os.scandir(dir):
             time = os.path.getctime(file)
-            print(file, time)
+            logging.debug(f"file is: {file} - time is: {time}")
+        logging.debug("'get_img_datetimes' has finished running.")
 
 class LicensePlateCommand(Command):
     table = bool
@@ -72,16 +79,32 @@ class LicensePlateCommand(Command):
     async def handle(self, c: Context) -> None:
         place = "" #placeholder for now
         data = str(c.message).replace("!LP", '').strip()
+        print("data1", data)
         data = data.split(', ', 1)
+        print("data2", data)
         time = datetime.datetime.now()
-        time = time.strftime('%d/%m/%Y %H:%M')
-        if len(data) == 1:
-            exists = Functions.database_retrieve(data)
-            logging.debug(f"exists, time, place is: {exists}, {time}, {place}")
+        time = time.strftime('%H:%M on %d/%m/%Y')
+        chars = 0
+        for character in data[0]: #Count characters in License plate input and make sure they meet a critera
+            chars = chars + 1
+        datachars = chars
+        if datachars > 9 or datachars < 3:
+            await c.send("Please check the license plate entered for correctness.")
+            return
+        if len(data) == 1: #Query command
+            exists, selection = Functions.database_retrieve(data)
             if exists == True:
-                await c.send(f"{data[0]} is has previously been recorded at {time} and {place}. If you would like to update the location, please run the command again, but this time add the new location/heading. The time will record automatically.")
+                logging.debug(f"exists = {exists} and selection = {selection}")
+                await c.send(f"License Plate number: '{data[0]}' has last been recorded at {selection[2]} and with the heading: '{selection[1]}'. If you would like to update the location, please run the command again, but this time add the new location/heading. The time will record automatically.")
             if exists == False:
-                await c.send(f"{data[0]} has not been recorded before. Please repeat the command and include a current location and heading. The time will automatically be recorded when you send the message.")
+                logging.debug(f"exists = {exists} and selection = {selection}")
+                await c.send(f"License Plate number: '{data[0]}' has not been recorded before. Please repeat the command and include a current location and heading. The time will automatically be recorded when you send the message.")
+        if len(data) == 2: #Update/Input command
+            success = Functions.database_store(data, time)
+            if success == True:
+                await c.send(f"License Plate number {data[0]} has sucessfully been recorded!")
+            if success == False:
+                await c.send(f"An error occured recording License Plate: '{data[0]}'. Please contact the operator.")
 
 class EchoCommand(Command):
     @regex_triggered("!echo")
