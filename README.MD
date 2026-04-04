@@ -14,15 +14,28 @@ It was written as a volunteer effort for fellow ICE watchers. The intention is t
 
 * Read a plate off of a clear image and enter it to the DB. Potentially, taking the meta data from that photo to get the location. Many phones and perhaps Signal itself may strip meta data, so that might not be available.
 
-* Better commands. The method to input data is a strict format currently. That is:
-!LP LP#, Text about the heading
-That first comma is what tells the bot to even read the rest of the text.
+* Better commands. The method to input data is a strict format currently.
 
 * Data transfer between instances via import/export
 
 * Exporting the database via chat commands into a friendly format
 
 * Deletion by admins of mistaken data
+
+## User guide
+
+There are 3 commands, one of them using the same keyword, but it does different things based on your input.
+
+### !Help<br>
+This display a help message to explain the other command.
+
+
+### !LP LicensePlate#<br>
+This will display the last entry for this licenseplate, if it exists.
+
+
+### !LP LicensePlate#, Where the vehicle is at or heading<br>
+This will enter in a new entry and automatically generate a time stamp.
 
 ### To install the chat bot:
 
@@ -34,15 +47,11 @@ replace dnf with whatever software manager you use.
 
 Please have Python3 installed correctly.
 Install the libraries this script uses. You can do so with:
-> pip install asyncio, signalbot, logging, yaml, nest_asyncio
+> pip install asyncio, sqlite3, yaml, logging, os, datetime, signalbot, nest_asyncio
 
-Rename or copy the file named config.example.yaml to be config.yaml and set the values inside to your values. Please note the area code is required for the phone number.
-> signal_service: "http://localhost:8080"
+Rename or copy the file named config.example.yaml to be config.yaml and set the values inside to your values. Please note the area code is required for the phone number. The dockerInit script also create this file for you.
 
-> PHONE_NUMBER = +19100000000
-
-You will need to install and use a the signal-cli, which can be downloaded [here](https://github.com/AsamK/signal-cli/releases/latest).
-You will need the signal-cli-rest-api as well, but the download and installation is handled by dockerInit.sh
+You will need the signal-cli-rest-api, but the download and installation is handled by dockerInit.sh
 
 ### To setup the chat bot:
 After running dockerInit.sh, run dockerRun.sh and go to [this URL](http://127.0.0.1:8080/v1/qrcodelink?device_name=local) and connect your host device to your signal account.
@@ -51,9 +60,14 @@ I ended up linking my primary account to the new bot account. Look in Settings >
 
 After the device is connected, restart the docker image by ending the process (control and C) and rerunning it.
 
+<br>
+
+### Turning it on:
+
 For usage after account is linked up, you'll need to run both programs: the docker image (with dockerRun.sh), and this program's "main.py"
 You'll need two terminal and run one command in each:
 
-> bash dockerRun.sh
+./dockerRun.sh
 
-> python3 main.py
+python3 main.py
+
