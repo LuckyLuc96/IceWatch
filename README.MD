@@ -1,10 +1,28 @@
 ### This program is a signal app chat bot.
 
-It was written as a volunteer effort for fellow ICE watchers. The intention is to allow for members of a signal chat to snap a photo or manually enter in a licence plate number and for that value to be held in an SQLlite Database, locally.
+It was written as a volunteer effort for fellow ICE watchers. The intention is to allow for members of a signal chat to snap a photo or manually enter in a licence plate number and for that value to be held in an SQLite3 Database, locally.
 
-Still obviously early in development, it does not quite do anything at this commit. I intend to use a photo reading library to read the license plate text from photos uploaded to the signal chat, which will download to the host PC where it'll be read by this program. It is intended for small scale use and each group should run it's own. Data transfer between instances may be considered in the future.
+## WORKING
 
-I will include a shellscript for an installation using signal-api to mimick the setup I am using. It will only work for linux operating systems.
+* Storing data remotely using the Signal App
+
+* Retrieving the last column of data entered for any one license plate
+
+* Check if a License Plate number has already been entered. (Redudant?) Data isn't over written, but added when a license plate is entered, so this command may be combined later
+
+## TODO
+
+* Read a plate off of a clear image and enter it to the DB. Potentially, taking the meta data from that photo to get the location. Many phones and perhaps Signal itself may strip meta data, so that might not be available.
+
+* Better commands. The method to input data is a strict format currently. That is:
+!LP LP#, Text about the heading
+That first comma is what tells the bot to even read the rest of the text.
+
+* Data transfer between instances via import/export
+
+* Exporting the database via chat commands into a friendly format
+
+* Deletion by admins of mistaken data
 
 ### To install the chat bot:
 
