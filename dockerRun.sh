@@ -1,6 +1,6 @@
 #!/usr/bin/bash
-export SIGNAL_SERVICE=(yq '.signal_service' config.yaml)
-export PHONE_NUMBER=(yq '.phone_number' config.yaml)
+export SIGNAL_SERVICE=(yq '.SIGNAL_SERVICE' config.yaml)
+export PHONE_NUMBER=(yq '.PHONE_NUMBER' config.yaml)
 WORKINGDIR=$PWD
 DIR=$HOME/.local/share/signal-cli
 CONFIG_DIR=$PWD/signal-cli-config
