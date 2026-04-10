@@ -26,9 +26,9 @@ logging.basicConfig(
 )
 
 class Functions():
-    dir = CONFIG["STORE_PATH"]
+    sqlite_path = CONFIG["STORE_PATH"]
 
-    connection = sqlite3.connect(dir)
+    connection = sqlite3.connect(sqlite_path)
     cursor = connection.cursor()
 
     def database_init():
